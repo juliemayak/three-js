@@ -101,7 +101,9 @@ function createLamppost() {
 
 function setupScene() {
     scene = new $THREE.Scene()
-    scene.background = new $THREE.Color('#b9d5ff')
+    // scene.background = new $THREE.Color('#b9d5ff')
+
+    const textureLoader = new $THREE.TextureLoader()
 
     camera = new $THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 1, 100)
     camera.position.set(0, 7, 10) // far
@@ -117,7 +119,7 @@ function setupScene() {
     scene.add(moonLight)
 
     // Fog
-    const fog = new $THREE.Fog('#923EA3', 1, 100)
+    const fog = new $THREE.Fog('#332941', 1, 20)
     scene.fog = fog
 
     // Ghost
@@ -129,13 +131,21 @@ function setupScene() {
     scene.add(house)
 
     // Walls
-    const walls = new $THREE.Mesh(
-        new $THREE.BoxGeometry(4, 5, 4),
-        new $THREE.MeshStandardMaterial({ color: 'white' })
-    )
+    const wallsMaterial = new $THREE.MeshStandardMaterial({ color: 'white' })
+    const walls = new $THREE.Mesh(new $THREE.BoxGeometry(4, 5, 4), wallsMaterial)
     walls.set
     walls.position.y = 2.5
     house.add(walls)
+
+    // textureLoader.load('/', function (map) {
+    //     map.wrapS = $THREE.RepeatWrapping
+    //     map.wrapT = $THREE.RepeatWrapping
+    //     map.anisotropy = 4
+    //     map.repeat.set(1, 2)
+    //     map.colorSpace = $THREE.SRGBColorSpace
+    //     wallsMaterial.map = map
+    //     wallsMaterial.needsUpdate = true
+    // })
 
     // Roof
     const roof = new $THREE.Mesh(
@@ -160,21 +170,21 @@ function setupScene() {
     const floorMaterial = new $THREE.MeshStandardMaterial()
     floorMaterial.color = new $THREE.Color('#333E55')
     floorMaterial.transparent = true
-    const floor = new $THREE.Mesh(new $THREE.PlaneGeometry(20, 20), floorMaterial)
-    floorMaterial.opacity = 0.9
+    const floor = new $THREE.Mesh(new $THREE.PlaneGeometry(40, 40), floorMaterial)
+    floorMaterial.opacity = 0.7
 
     floor.position.y = 0
     floor.rotation.x = -Math.PI * 0.5
     scene.add(floor)
 
-    const lightSpot = new $THREE.SpotLight('#FF0065', 1, 8, Math.PI, 0.5, -1) //distance angle penumbra decay
+    const lightSpot = new $THREE.SpotLight('#FF0065', 1, 8, Math.PI, 0.5, -1) // distance angle penumbra decay
     lightSpot.position.set(5, 3, 9)
     scene.add(lightSpot)
 
     // LAMPPOST
     createLamppost()
 
-    const groundMirrorGeometry = new $THREE.PlaneGeometry(20, 20)
+    const groundMirrorGeometry = new $THREE.PlaneGeometry(40, 40)
     const groundMirror = new Reflector(groundMirrorGeometry, {
         clipBias: 0.0003,
         textureWidth: window.innerWidth * window.devicePixelRatio,
@@ -186,9 +196,14 @@ function setupScene() {
     groundMirror.rotateX(-Math.PI * 0.5)
     scene.add(groundMirror)
 
+    // const hemiLight = new $THREE.HemisphereLight(0xddeeff, 0x0f0e0d, 0.02)
+    // scene.add(hemiLight)
+
+    // Renderer
     renderer = new $THREE.WebGLRenderer({ antialias: true })
     renderer.setSize(window.innerWidth, window.innerHeight)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setClearColor('#332941')
     canvas.value.appendChild(renderer.domElement)
 
     // Controls
